@@ -1,0 +1,91 @@
+{
+  "theme": "dark",
+  "archetype": "Archetype 4 (Swiss & High-Contrast) + Terminal Retro-Futurism",
+  "typography": {
+    "font_family": {
+      "headings": "'Chivo', sans-serif",
+      "body": "'JetBrains Mono', monospace",
+      "imports": "@import url('https://fonts.googleapis.com/css2?family=Chivo:wght@300;400;700;900&family=JetBrains+Mono:wght@300;400;700&display=swap');"
+    },
+    "rules": {
+      "headings": "Use tracking-tight for all headings. Never use Inter or standard sans-serif.",
+      "labels": "Overlines and labels MUST be uppercase, text-xs, with wide tracking (tracking-[0.2em]).",
+      "numbers": "All financial figures, prices, charts, and metrics MUST use JetBrains Mono to ensure tabular alignment and prevent jitter during live updates.",
+      "hierarchy": "Max text size for primary dashboard numbers is text-4xl. Max for landing/login pages is text-6xl."
+    }
+  },
+  "colors": {
+    "background": {
+      "base": "#050505",
+      "panel": "#111113",
+      "glass": "bg-[#050505]/80 backdrop-blur-xl"
+    },
+    "borders": {
+      "default": "rgba(255, 255, 255, 0.1)",
+      "hover": "rgba(255, 255, 255, 0.3)"
+    },
+    "text": {
+      "primary": "#FFFFFF",
+      "secondary": "#8A8A93",
+      "muted": "#5C5C66"
+    },
+    "accents": {
+      "ai_insight": "#0066FF",
+      "profit_buy": "#00E559",
+      "loss_sell": "#FF3333",
+      "warning": "#FFB800"
+    }
+  },
+  "layout_and_spacing": {
+    "strategy": "Control Room Grid (Dense & Functional)",
+    "grid": "grid-cols-1 md:grid-cols-3 lg:grid-cols-4 with gap-4.",
+    "padding": "Containers with borders must use generous internal padding (p-6) unless it's a dense data table (p-2).",
+    "border_radius": "Sharp edges required. Use rounded-none or max rounded-sm (4px). Avoid default Shadcn rounded-lg.",
+    "surfaces": "Grid Borders (Technical Look). Expose the skeleton. Container uses border-collapse layout style, panels have 1px solid border. NO soft drop shadows."
+  },
+  "components": {
+    "navigation": "Sticky top nav. Use glassmorphism (bg-[#050505]/80 backdrop-blur-xl) with a hard bottom border (border-white/10).",
+    "buttons": "Flat, sharp borders. Action buttons (Buy/Sell) use solid background (Profit/Loss colors) with black/white text. Secondary buttons use transparent background with border-white/20.",
+    "tables_and_lists": "Data rows must have hover:bg-white/5. Text left-aligned, monetary numbers right-aligned.",
+    "charts": "Recharts library. Dark theme. Remove grid lines or make them extremely faint (stroke-white/5). Use neon green/red lines.",
+    "ai_panel": "Visually distinguish Gemini AI explanations using the ai_insight color (#0066FF) for borders or subtle background tint (bg-[#0066FF]/10)."
+  },
+  "motion": {
+    "interactions": "Crisp and instant. hover:border-white/40 hover:bg-[#1A1A1D].",
+    "tickers": "Price changes must briefly flash bg-[#00E559]/20 (up) or bg-[#FF3333]/20 (down) using CSS animations.",
+    "loading": "Avoid generic spinners. Use terminal-style blinking blocks or ASCII-style progress."
+  },
+  "media": {
+    "image_urls": {
+      "hero_login_bg": {
+        "url": "https://images.pexels.com/photos/3612932/pexels-photo-3612932.jpeg",
+        "description": "Futuristic abstract dark geometric hexagonal pattern. Use for login/signup screens or marketing sections. CRITICAL: Overlay with bg-black/70 to ensure text readability."
+      },
+      "abstract_graph": {
+        "url": "https://images.unsplash.com/photo-1763888450809-4125d93fa56b",
+        "description": "Abstract streaks of blue and red light at night. Use for empty states, placeholders, or decorative banners."
+      },
+      "bitcoin_logo": {
+        "url": "https://images.pexels.com/photos/29012807/pexels-photo-29012807.jpeg",
+        "description": "Glowing neon Bitcoin symbol. Use as the hero/fallback visual for BTC."
+      },
+      "ethereum_logo": {
+        "url": "https://images.unsplash.com/photo-1590286162167-70fb467846ae",
+        "description": "Gold and black round Ethereum emblem. Use as the hero/fallback visual for ETH."
+      },
+      "trader_avatar": {
+        "url": "https://images.pexels.com/photos/7567588/pexels-photo-7567588.jpeg",
+        "description": "Stock trader analyzing data. Use for user profile avatar placeholder or testimonials."
+      }
+    }
+  },
+  "instructions_to_main_agent": [
+    "You are building a high-end, professional Crypto Trading Terminal. The tone is intense, precise, and authoritative.",
+    "CRITICAL: Add `data-testid` attributes to ALL interactive elements, forms, and key informational nodes.",
+    "CRITICAL: Inject the Google Fonts import into your global CSS (index.css). Do not use default Inter font.",
+    "Strip default Shadcn 'softness' (borders, radiuses, shadows). Use sharp, technical 1px borders.",
+    "Prioritize data density. Use the 'Control Room Grid' for the dashboard layout.",
+    "Use Phosphor icons (@phosphor-icons/react) if possible for dense dashboards, otherwise use strictly sharp/technical variants of Lucide.",
+    "Avoid color gradients except in specific AI-highlighted areas. Rely on solid colors and 1px borders."
+  ]
+}

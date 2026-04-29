@@ -1,115 +1,167 @@
+@import url('https://fonts.googleapis.com/css2?family=Chivo:wght@300;400;700;900&family=JetBrains+Mono:wght@300;400;500;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+:root {
+    --bg-base: #050505;
+    --bg-panel: #111113;
+    --bg-elev: #1A1A1D;
+    --border-default: rgba(255, 255, 255, 0.1);
+    --border-hover: rgba(255, 255, 255, 0.3);
+    --text-primary: #FFFFFF;
+    --text-secondary: #8A8A93;
+    --text-muted: #5C5C66;
+    --c-buy: #00E559;
+    --c-sell: #FF3333;
+    --c-warn: #FFB800;
+    --c-ai: #0066FF;
+}
+
+html, body, #root {
+    background: var(--bg-base);
+    color: var(--text-primary);
+    min-height: 100%;
+}
+
 body {
     margin: 0;
-    font-family:
-        -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-        "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-        sans-serif;
+    font-family: 'JetBrains Mono', monospace;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    font-size: 14px;
 }
 
-code {
-    font-family:
-        source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+h1, h2, h3, h4, h5, h6, .font-display {
+    font-family: 'Chivo', sans-serif;
+    letter-spacing: -0.02em;
 }
 
-@layer base {
-    :root {
-        --background: 0 0% 100%;
-        --foreground: 0 0% 3.9%;
-        --card: 0 0% 100%;
-        --card-foreground: 0 0% 3.9%;
-        --popover: 0 0% 100%;
-        --popover-foreground: 0 0% 3.9%;
-        --primary: 0 0% 9%;
-        --primary-foreground: 0 0% 98%;
-        --secondary: 0 0% 96.1%;
-        --secondary-foreground: 0 0% 9%;
-        --muted: 0 0% 96.1%;
-        --muted-foreground: 0 0% 45.1%;
-        --accent: 0 0% 96.1%;
-        --accent-foreground: 0 0% 9%;
-        --destructive: 0 84.2% 60.2%;
-        --destructive-foreground: 0 0% 98%;
-        --border: 0 0% 89.8%;
-        --input: 0 0% 89.8%;
-        --ring: 0 0% 3.9%;
-        --chart-1: 12 76% 61%;
-        --chart-2: 173 58% 39%;
-        --chart-3: 197 37% 24%;
-        --chart-4: 43 74% 66%;
-        --chart-5: 27 87% 67%;
-        --radius: 0.5rem;
-    }
-    .dark {
-        --background: 0 0% 3.9%;
-        --foreground: 0 0% 98%;
-        --card: 0 0% 3.9%;
-        --card-foreground: 0 0% 98%;
-        --popover: 0 0% 3.9%;
-        --popover-foreground: 0 0% 98%;
-        --primary: 0 0% 98%;
-        --primary-foreground: 0 0% 9%;
-        --secondary: 0 0% 14.9%;
-        --secondary-foreground: 0 0% 98%;
-        --muted: 0 0% 14.9%;
-        --muted-foreground: 0 0% 63.9%;
-        --accent: 0 0% 14.9%;
-        --accent-foreground: 0 0% 98%;
-        --destructive: 0 62.8% 30.6%;
-        --destructive-foreground: 0 0% 98%;
-        --border: 0 0% 14.9%;
-        --input: 0 0% 14.9%;
-        --ring: 0 0% 83.1%;
-        --chart-1: 220 70% 50%;
-        --chart-2: 160 60% 45%;
-        --chart-3: 30 80% 55%;
-        --chart-4: 280 65% 60%;
-        --chart-5: 340 75% 55%;
-    }
+.font-mono { font-family: 'JetBrains Mono', monospace; }
+
+.label-overline {
+    text-transform: uppercase;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--text-secondary);
+    font-weight: 500;
 }
 
-@layer base {
-    * {
-        @apply border-border;
-    }
-    body {
-        @apply bg-background text-foreground;
-    }
+.panel {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-default);
+    transition: border-color 120ms ease, background-color 120ms ease;
+}
+.panel:hover { border-color: rgba(255, 255, 255, 0.2); }
+
+.panel-elev {
+    background: var(--bg-elev);
+    border: 1px solid var(--border-default);
 }
 
-@layer base {
-    [data-debug-wrapper="true"] {
-        display: contents !important;
-    }
-
-    [data-debug-wrapper="true"] > * {
-        margin-left: inherit;
-        margin-right: inherit;
-        margin-top: inherit;
-        margin-bottom: inherit;
-        padding-left: inherit;
-        padding-right: inherit;
-        padding-top: inherit;
-        padding-bottom: inherit;
-        column-gap: inherit;
-        row-gap: inherit;
-        gap: inherit;
-        border-left-width: inherit;
-        border-right-width: inherit;
-        border-top-width: inherit;
-        border-bottom-width: inherit;
-        border-left-style: inherit;
-        border-right-style: inherit;
-        border-top-style: inherit;
-        border-bottom-style: inherit;
-        border-left-color: inherit;
-        border-right-color: inherit;
-        border-top-color: inherit;
-        border-bottom-color: inherit;
-    }
+.btn-primary {
+    background: var(--text-primary);
+    color: #000;
+    padding: 0.6rem 1rem;
+    border: 1px solid var(--text-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-size: 11px;
+    font-weight: 700;
+    transition: opacity 120ms ease;
+    cursor: pointer;
 }
+.btn-primary:hover { opacity: 0.85; }
+.btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.btn-ghost {
+    background: transparent;
+    color: var(--text-primary);
+    padding: 0.55rem 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 120ms ease;
+}
+.btn-ghost:hover { border-color: var(--border-hover); background: var(--bg-elev); }
+
+.btn-buy {
+    background: var(--c-buy); color: #000;
+    padding: 0.6rem 1rem; border: 0; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.15em; font-size: 11px;
+    cursor: pointer;
+}
+.btn-sell {
+    background: var(--c-sell); color: #fff;
+    padding: 0.6rem 1rem; border: 0; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.15em; font-size: 11px;
+    cursor: pointer;
+}
+
+.input-base {
+    background: #050505;
+    border: 1px solid var(--border-default);
+    color: var(--text-primary);
+    padding: 0.65rem 0.85rem;
+    width: 100%;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 120ms ease;
+}
+.input-base:focus { border-color: var(--text-primary); }
+
+.text-buy { color: var(--c-buy); }
+.text-sell { color: var(--c-sell); }
+.text-ai { color: var(--c-ai); }
+.text-warn { color: var(--c-warn); }
+
+.bg-buy-soft { background: rgba(0, 229, 89, 0.1); }
+.bg-sell-soft { background: rgba(255, 51, 51, 0.1); }
+.bg-ai-soft { background: rgba(0, 102, 255, 0.08); }
+.border-ai { border-color: rgba(0, 102, 255, 0.4); }
+
+@keyframes blink-buy {
+    0% { background-color: rgba(0, 229, 89, 0.25); }
+    100% { background-color: transparent; }
+}
+@keyframes blink-sell {
+    0% { background-color: rgba(255, 51, 51, 0.25); }
+    100% { background-color: transparent; }
+}
+.flash-up { animation: blink-buy 700ms ease-out; }
+.flash-down { animation: blink-sell 700ms ease-out; }
+
+@keyframes blockblink {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+}
+.term-loading::after {
+    content: '\25A0';
+    animation: blockblink 800ms infinite;
+    margin-left: 0.4rem;
+    color: var(--c-ai);
+}
+
+::selection { background: var(--c-ai); color: #fff; }
+
+/* Top nav */
+.glass-nav {
+    background: rgba(5, 5, 5, 0.8);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border-default);
+}
+
+/* Tables */
+.tbl { width: 100%; border-collapse: collapse; }
+.tbl th, .tbl td { padding: 0.65rem 0.85rem; border-bottom: 1px solid var(--border-default); text-align: left; }
+.tbl th { font-size: 10px; text-transform: uppercase; letter-spacing: 0.18em; color: var(--text-secondary); font-weight: 500; }
+.tbl tr:hover td { background: rgba(255, 255, 255, 0.03); }
+.num { font-family: 'JetBrains Mono', monospace; text-align: right; font-variant-numeric: tabular-nums; }
+
+/* No rounded corners overrides */
+button, input, select, textarea { border-radius: 0 !important; }

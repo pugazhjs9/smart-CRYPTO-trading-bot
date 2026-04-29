@@ -1,0 +1,36 @@
+{
+  "summary": "Full-stack testing of CryptoAI MVP. 16/16 backend pytest cases pass (after CoinGecko rate-limit recovery). Frontend login -> dashboard, portfolio (all 4 tabs), and alerts (create/check/delete + signal alert) all work end-to-end. Gemini explanation returns real text. ML prediction, indicators, signal badge, range buttons, and coin row switch all functional.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "/api/market/* and /api/analysis/*", "issue": "CoinGecko free tier rate-limits aggressively -> backend returns 502 'CoinGecko error: 429' under burst load. Cache TTL helps but only 30-120s. Consider exponential backoff, longer TTL, or stale-while-revalidate. Currently expected per task brief."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Dashboard", "issues": ["Recharts console warning: 'width(-1) and height(-1) of chart should be greater than 0' on initial render before data arrives. Cosmetic only - chart renders correctly once data loads."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/backend_test.py", "/app/test_reports/pytest/pytest_results.xml"],
+  "action_items": [
+    "Optional: Increase CoinGecko cache TTL or implement stale-while-revalidate to soften 429s for end users.",
+    "Optional: Guard recharts ResponsiveContainer with min height/width or render chart only after data is loaded to remove console warnings."
+  ],
+  "critical_code_review_comments": [
+    "server.py is 629 lines - consider splitting into routers (auth, market, analysis, portfolio, alerts) for maintainability.",
+    "CORS allow_origins=['*'] with allow_credentials=False - OK for header-Bearer auth, but the cookie auth path (httpOnly access_token) won't work cross-origin from the deployed frontend until origins are explicit and credentials=true.",
+    "_cg_get cache is process-local dict (not shared, no eviction). Fine for MVP, replace with TTLCache or Redis if scaled.",
+    "ml_predict refits RandomForest on every request - acceptable for MVP but should be cached per coin/window.",
+    "/analysis/explain falls back silently to a non-Gemini text if Gemini errors - good resilience but should log/expose source flag (ai vs heuristic)."
+  ],
+  "updated_files": ["/app/backend/tests/backend_test.py", "/app/test_reports/iteration_1.json"],
+  "success_rate": {"backend": "100% (16/16 once not rate-limited)", "frontend": "100% (login, dashboard, portfolio, alerts flows verified)"},
+  "test_credentials": "admin@cryptoai.com / admin123 (validated working)",
+  "seed_data_creation": "Created/cleaned TEST_ users, holdings, paper trades, and alerts during tests; all cleaned up via DELETE endpoints.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "All endpoints and pages verified. CoinGecko 502s are transient rate-limits, not real bugs - rerun pytest after a 60-90s wait if it fails. Auth uses both httpOnly cookie AND Bearer token; frontend uses Bearer (localStorage 'ca_token'). Gemini returns real explanations.",
+  "rca of the issue": "N/A - no real bugs. The only failures observed were transient 502s from CoinGecko free-tier 429 rate limiting (mitigation: backoff/longer cache)."
+}

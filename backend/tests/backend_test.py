@@ -1,6 +1,6 @@
 import os, time, pytest, requests, uuid
 
-BASE = os.environ.get('REACT_APP_BACKEND_URL', 'https://smart-trading-bot-47.preview.emergentagent.com').rstrip('/')
+BASE = os.environ.get('REACT_APP_BACKEND_URL', 'https://coindcx-ready.preview.emergentagent.com').rstrip('/')
 API = f"{BASE}/api"
 
 @pytest.fixture(scope="session")

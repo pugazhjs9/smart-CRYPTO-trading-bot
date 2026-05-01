@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CryptoAI Trading Assistant — CoinDCX Evaluation Deck</title>
+<style>
+  :root {
+    --bg: #0b0f14;
+    --panel: #121821;
+    --ink: #e6edf3;
+    --mute: #8aa0b4;
+    --accent: #00c4a7;
+    --warn: #ffb020;
+    --danger: #ff5a5f;
+    --up: #22c55e;
+    --down: #ef4444;
+    --border: #1f2a37;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink);
+    font-family: "Helvetica Neue", Arial, sans-serif; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  code, pre, .mono { font-family: "JetBrains Mono", Menlo, Consolas, monospace; }
+
+  /* ---- 16:9 slide ---- */
+  .slide {
+    width: 297mm;
+    height: 167mm;   /* 16:9 landscape A4-ish */
+    padding: 14mm 18mm;
+    page-break-after: always;
+    break-after: page;
+    position: relative;
+    border-bottom: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    overflow: hidden;
+  }
+  .slide:last-child { page-break-after: auto; }
+  .slide h1 { font-size: 30pt; margin: 0 0 4mm 0; letter-spacing: -0.5px; }
+  .slide h2 { font-size: 20pt; margin: 0 0 4mm 0; color: var(--accent); letter-spacing: -0.3px; }
+  .slide h3 { font-size: 14pt; margin: 4mm 0 2mm 0; color: var(--ink); }
+  .slide p, .slide li { font-size: 12pt; line-height: 1.45; color: var(--ink); }
+  .slide li { margin-bottom: 2mm; }
+  .slide small, .foot { color: var(--mute); font-size: 9pt; }
+
+  .eyebrow { color: var(--accent); font-size: 10pt; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 3mm; }
+  .footer { position: absolute; bottom: 6mm; left: 18mm; right: 18mm; display: flex;
+    justify-content: space-between; color: var(--mute); font-size: 9pt; border-top: 1px solid var(--border); padding-top: 3mm; }
+
+  /* --- cover --- */
+  .cover {
+    background: radial-gradient(1200px 600px at 20% 20%, #143a33 0%, transparent 60%),
+                radial-gradient(900px 500px at 85% 80%, #1a2340 0%, transparent 60%),
+                var(--bg);
+  }
+  .cover .brand { font-size: 10pt; color: var(--accent); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 10mm; }
+  .cover h1 { font-size: 48pt; line-height: 1.05; margin-bottom: 6mm; }
+  .cover .tag { font-size: 16pt; color: var(--mute); max-width: 220mm; line-height: 1.4; }
+  .cover .meta { position: absolute; bottom: 14mm; left: 18mm; color: var(--mute); font-size: 10pt; }
+  .cover .chip { display: inline-block; border: 1px solid var(--accent); color: var(--accent);
+    padding: 2mm 4mm; border-radius: 2mm; font-size: 10pt; margin-right: 3mm; margin-top: 8mm; }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8mm; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6mm; }
+  .card { background: var(--panel); border: 1px solid var(--border); border-radius: 3mm; padding: 5mm 6mm; }
+  .card h3 { margin-top: 0; color: var(--accent); font-size: 12pt; }
+  .card p, .card li { font-size: 11pt; }
+
+  .kbd { display: inline-block; background: #0e1520; border: 1px solid var(--border); border-radius: 2mm;
+    padding: 0.3mm 1.6mm; font-family: "JetBrains Mono", monospace; font-size: 10pt; color: var(--accent); }
+
+  pre { background: #0e1520; border: 1px solid var(--border); border-radius: 3mm;
+    padding: 4mm 5mm; font-size: 9.5pt; line-height: 1.45; color: #d7e3ee; overflow: hidden; white-space: pre; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 10.5pt; }
+  th, td { padding: 2mm 3mm; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+  th { color: var(--accent); font-weight: 600; font-size: 10pt; letter-spacing: 0.3px; }
+  td.good { color: var(--up); }
+  td.bad  { color: var(--down); }
+
+  .pill { display: inline-block; padding: 1mm 3mm; border-radius: 10mm; font-size: 9pt;
+    border: 1px solid var(--border); background: #0e1520; color: var(--mute); margin-right: 2mm; }
+  .pill.ok { color: var(--up); border-color: #14532d; }
+  .pill.warn { color: var(--warn); border-color: #4a3b11; }
+
+  .two-col { column-count: 2; column-gap: 10mm; }
+  .q { color: var(--accent); font-weight: 600; }
+  .a { color: var(--ink); }
+
+  .metric { font-size: 30pt; color: var(--accent); font-family: "JetBrains Mono", monospace; }
+  .metric-label { font-size: 10pt; color: var(--mute); text-transform: uppercase; letter-spacing: 2px; }
+
+  /* page break safety */
+  .slide > *:not(.footer) { flex-shrink: 0; }
+
+  @page { size: 297mm 167mm; margin: 0; }
+  @media print {
+    body { background: var(--bg); }
+    .slide { border-bottom: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ 1. COVER ============ -->
+<section class="slide cover">
+  <div class="brand">CoinDCX · Evaluation Deck</div>
+  <h1>CryptoAI<br/>Trading Assistant</h1>
+  <p class="tag">A full-stack, AI-augmented trading terminal that fuses real-time market data, classical indicators, machine-learning direction forecasts, and plain-English explanations — purpose-built for retail crypto traders.</p>
+  <div>
+    <span class="chip">React</span>
+    <span class="chip">FastAPI</span>
+    <span class="chip">MongoDB</span>
+    <span class="chip">scikit-learn</span>
+    <span class="chip">Gemini 2.5 Flash</span>
+  </div>
+  <div class="meta">Prepared for CoinDCX technical interview · July 2025</div>
+</section>
+
+<!-- ============ 2. 60-SECOND PITCH ============ -->
+<section class="slide">
+  <div class="eyebrow">01 · The Pitch</div>
+  <h1>Sixty seconds, no slides</h1>
+  <p style="font-size: 14pt; line-height: 1.55; color: var(--ink); margin-top: 6mm;">
+    I built <b>CryptoAI</b> — a browser-based trading terminal that takes the guesswork out of crypto for retail users.
+    It pulls <b>real-time market data</b> from CoinGecko, layers on <b>three classical indicators</b> (RSI, MACD, EMA),
+    fuses them into a single <b>BUY/SELL/HOLD signal with confidence</b>, adds a <b>scikit-learn RandomForest</b>
+    for next-bar direction, and asks <b>Gemini 2.5 Flash</b> to translate the picture into one paragraph of plain English.
+  </p>
+  <p style="font-size: 14pt; line-height: 1.55; color: var(--ink);">
+    On top of that sits a <b>risk calculator</b>, a <b>paper-trading wallet</b>, and a <b>price/signal alerts engine</b> —
+    all behind JWT auth, all backed by MongoDB. ~1,900 lines, 16/16 backend tests passing, deploys in one shell command.
+  </p>
+  <p style="font-size: 14pt; line-height: 1.5; color: var(--accent); margin-top: 4mm;">
+    It is essentially a lightweight, opinionated version of the kind of Pro Dashboard CoinDCX offers today — but with an AI copilot baked in.
+  </p>
+  <div class="footer"><span>CryptoAI · CoinDCX Deck</span><span>2 / 14</span></div>
+</section>
+
+<!-- ============ 3. PROBLEM ============ -->
+<section class="slide">
+  <div class="eyebrow">02 · The Problem</div>
+  <h1>Retail crypto traders lose money for three reasons</h1>
+  <div class="grid3" style="margin-top: 8mm;">
+    <div class="card">
+      <h3>1 · React to headlines</h3>
+      <p>No quant discipline. Decisions driven by Twitter, not by data. Outcomes are random.</p>
+    </div>
+    <div class="card">
+      <h3>2 · No position sizing</h3>
+      <p>One bad trade wipes out a month of gains. Stop-loss and R:R are folklore, not math.</p>
+    </div>
+    <div class="card">
+      <h3>3 · Indicator jargon</h3>
+      <p>"RSI 72" means nothing to a new user. Charts are for experts; beginners give up or gamble.</p>
+    </div>
+  </div>
+  <h3 style="margin-top: 10mm;">My hypothesis</h3>
+  <p style="font-size: 13pt;">If a product fuses <b>signal&nbsp;+&nbsp;explanation&nbsp;+&nbsp;risk math</b> on one screen,
+  activation and 30-day survival of retail traders goes up — directly aligned with CoinDCX's mission of
+  <i>"making crypto accessible to every Indian"</i>.</p>
+  <div class="footer"><span>CryptoAI · CoinDCX Deck</span><span>3 / 14</span></div>
+</section>
+
+<!-- ============ 4. ARCHITECTURE ============ -->
+<section class="slide">
+  <div class="eyebrow">03 · Architecture</div>
+  <h1>One diagram, one deploy</h1>
+<pre style="margin-top: 4mm;">
+React (3000) ──REST /api──▶ FastAPI (8001) ──motor──▶ MongoDB
+   │                           │
+   │ Recharts                  ├── httpx ──────▶ CoinGecko  (cached 30–120 s)
+   │ Tailwind                  ├── pandas/numpy ▶ RSI · MACD · EMA
+   │ AuthContext               ├── scikit-learn ▶ RandomForestClassifier
+   │                           └── emergentintegrations ▶ Gemini 2.5 Flash
+   └── JWT (httpOnly cookie + Bearer) ─── single-source auth
+</pre>
+  <div class="grid2" style="margin-top: 6mm;">
+    <div class="card">
+      <h3>Design principles I enforced</h3>
+      <ul>
+        <li>Single backend module · single <span class="kbd">/api</span> prefix → ingress-friendly, zero deploy surprises</li>
+        <li><b>UUIDs only</b> — never Mongo ObjectId → JSON-safe, fork-safe</li>
+        <li>Dumb frontend, smart backend — trading logic never leaks to the client</li>
+        <li>Env-first config — same binary runs local, k8s, or behind a CDN</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Footprint</h3>
+      <p><span class="metric">~1.9k</span> <span class="metric-label">lines of code</span></p>
+      <p><span class="metric">16/16</span> <span class="metric-label">backend tests passing</span></p>
+      <p><span class="metric">~25</span> <span class="metric-label">API endpoints</span></p>
+      <p><span class="metric">1</span> <span class="metric-label">shell command to run</span></p>
+    </div>
+  </div>
+  <div class="footer"><span>CryptoAI · CoinDCX Deck</span><span>4 / 14</span></div>
+</section>
+
+<!-- ============ 5. SIGNAL ENGINE ============ -->
+<section class="slide">
+  <div class="eyebrow">04 · Technical Depth</div>
+  <h1>The signal engine — a scored vote, not a hierarchy</h1>
+  <div class="grid2" style="margin-top: 4mm;">
+    <div>
+      <table>
+        <tr><th>Indicator</th><th>Bullish</th><th>Bearish</th></tr>
+        <tr><td>RSI(14)</td><td class="good">&lt; 30  (+1)</td><td class="bad">&gt; 70  (−1)</td></tr>
+        <tr><td>MACD(12,26,9)</td><td class="good">line &gt; signal (+1)</td><td class="bad">line &lt; signal (−1)</td></tr>
+        <tr><td>EMA(20) vs EMA(50)</td><td class="good">golden (+1)</td><td class="bad">death (−1)</td></tr>
+      </table>
+      <p style="margin-top: 5mm;">Aggregate score ∈ <span class="mono">[−3, +3]</span></p>
+      <ul>
+        <li><span class="pill ok">≥ +2</span> → <b>BUY</b></li>
+        <li><span class="pill warn">−1 .. +1</span> → <b>HOLD</b></li>
+        <li><span class="pill" style="color:var(--down);border-color:#4a1414">≤ −2</span> → <b>SELL</b></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Why a scored vote?</h3>
+      <p><b>Robustness.</b> A single false positive can't overturn the other two.</p>
+      <p>It also gives a natural <b>confidence</b> number we can expose to the user ("3/3 indicators agree").</p>
+      <p>Every component writes to a <span class="mono">reasons[]</span> list — the exact input that Gemini receives for the explanation,
+      so the LLM can never hallucinate numbers we didn't compute.</p>
+    </div>
+  </div>
+  <div class="footer"><span>CryptoAI · CoinDCX Deck</span><span>5 / 14</span></div>
+</section>
+
+<!-- ============ 6. ML LAYER ============ -->
+<section class="slide">
+  <div class="eyebrow">05 · Technical Depth</div>
+  <h1>ML predictor — honest, shallow, explainable</h1>
+  <div class="grid2" style="margin-top: 4mm;">
+    <div class="card">
+      <h3>Model</h3>
+      <p><span class="mono">RandomForestClassifier(n_estimators=100, max_depth=4)</span></p>
+      <p>Shallow on purpose — low variance on 90-bar windows. Trained <b>per request</b> (~50 ms) so the model always sees the latest bar.</p>
+    </div>
+    <div class="card">
+      <h3>Features (9, all explainable)</h3>
+      <ul>
+        <li>Lagged returns: t-1, t-2, t-3, t-5, t-10</li>
+        <li>RSI(14)</li>
+        <li>MACD − signal diff</li>
+        <li>EMA(20) / EMA(50) ratio</li>
+        <li>Label: 1 if next-day return &gt; 0 else 0</li>
+      </ul>
+    </div>
+  </div>
+  <div class="card" style="margin-top: 6mm;">
+    <h3>Trade-off I own (and would defend)</h3>
+    <p>Train-per-request trades CPU for <b>zero staleness</b>. At &gt; 50 coins we pickle per-coin models and retrain hourly
+    — see <i>Upgrade Path</i>, slide 10. The ML layer is a <b>confirmation signal</b>, not a standalone predictor;
+    it never overrides the indicator vote, only colours the confidence.</p>
+  </div>
+  <div class="footer"><span>CryptoAI · CoinDCX Deck</span><span>6 / 14</span></div>
+</section>
+
+<!-- ============ 7. LLM & SECURITY ============ -->
+<section class="slide">
+  <div class="eyebrow">06 · Technical Depth</div>
+  <h1>LLM explanation · Caching · Security</h1>
+  <div class="grid3" style="margin-top: 4mm;">
+    <div class="card">
+      <h3>Gemini 2.5 Flash</h3>
+      <ul>
+        <li>Called <b>only</b> on user click → cost scales with engagement, not users</li>
+        <li>Input = structured indicator values + signal + ML probability</li>
+        <li>Price history is never sent → hallucination risk is bounded</li>
+        <li>~700 ms for a 150-token summary</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Cache</h3>
+      <ul>
+        <li>In-process TTL dict keyed by <span class="mono">(path, params)</span></li>
+        <li>30 s for live price, 120 s for OHLC</li>
+        <li>Cuts upstream CoinGecko calls by ~90 %</li>
+        <li>Single-instance only → Redis on the roadmap</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Security posture</h3>
+      <ul>
+        <li>bcrypt w/ per-password salt</li>
+        <li>JWT HS256 · 7-day · httpOnly cookie + Bearer</li>
+        <li>CORS locked to <span class="mono">FRONTEND_URL</span></li>
+        <li>Every protected route funnels through one <span class="mono">get_current_user</span> dependency</li>
+        <li><span class="mono">{password_hash: 0}</span> projection on every user read</li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer"><span>CryptoAI · CoinDCX Deck</span><span>7 / 14</span></div>
+</section>
+
+<!-- ============ 8. IMPACT ============ -->
+<section class="slide">
+  <div class="eyebrow">07 · Business Impact</div>
+  <h1>The metrics CoinDCX cares about</h1>
+  <table style="margin-top: 6mm;">
+    <tr>
+      <th style="width: 24%">Metric</th>
+      <th style="width: 38%">Why it matters to CoinDCX</th>
+      <th>This system's lever</th>
+    </tr>
+    <tr><td>Retail activation rate</td><td>Onboarded users who place a first trade</td><td class="good">Paper-trading wallet removes first-trade fear</td></tr>
+    <tr><td>30-day survival</td><td>Users who don't blow up in month 1</td><td class="good">Risk calculator enforces position sizing</td></tr>
+    <tr><td>Time-on-app</td><td>Pro-tier upsell · advertising inventory</td><td class="good">Signal + AI explanation is a daily-return loop</td></tr>
+    <tr><td>Support ticket volume</td><td>"Why did I lose money?" tickets</td><td class="good">Plain-English explanations preempt them</td></tr>
+    <tr><td>API cost / user</td><td>Upstream market-data bills scale with users</td><td class="good">TTL cache cuts upstream by ~90 %</td></tr>
+  </table>
+  <h3 style="margin-top: 10mm;">One-line value proposition</h3>
+  <p style="font-size: 14pt; color: var(--accent);">
+    Bolt this signal + explain + risk layer onto the CoinDCX Pro chart and you turn a <i>chart-viewer</i>
+    into a <i>decision-tool</i> — at the cost of one FastAPI service and a Redis cache.
+  </p>
+  <div class="footer"><span>CryptoAI · CoinDCX Deck</span><span>8 / 14</span></div>
+</section>
+
+<!-- ============ 9. TRADE-OFFS ============ -->
+<section class="slide">
+  <div class="eyebrow">08 · Trade-offs</div>
+  <h1>Every trade-off has a named upgrade path</h1>
+  <table style="margin-top: 4mm;">
+    <tr><th style="width: 22%">Concern</th><th style="width: 34%">Today (MVP)</th><th>Production fix</th></tr>
+    <tr><td>Cache</td><td>In-process dict</td><td>Redis + pub-sub invalidation</td></tr>
+    <tr><td>Prices</td><td>30 s polling</td><td>Exchange WebSocket + Redis fan-out</td></tr>
+    <tr><td>ML</td><td>Train per request</td><td>Pickled per-coin models · nightly retrain · MLflow registry</td></tr>
+    <tr><td>Alerts</td><td>Manual pull (<span class="mono">/alerts/check</span>)</td><td>Celery-beat cron + Email / Telegram / Webhook adapters</td></tr>
+    <tr><td>Auth</td><td>JWT 7-day</td><td>Refresh-token rotation · device list · 2FA</td></tr>
+    <tr><td>Database</td><td>Single MongoDB</td><td>Replica set · <span class="mono">readPreference=secondary</span> for analytics</td></tr>
+    <tr><td>Observability</td><td>Log lines</td><td>Structured logs → Loki · Prometheus · OpenTelemetry</td></tr>
+    <tr><td>Market data</td><td>CoinGecko free</td><td>Exchange-native feeds (CoinDCX / Binance) via adapter protocol</td></tr>
+    <tr><td>Secrets</td><td><span class="mono">.env</span></td><td>Vault / AWS Secrets Manager · rotating JWT keys (<span class="mono">kid</span> header)</td></tr>
+  </table>
+  <p style="margin-top: 6mm; color: var(--mute);">
+    If the interviewer pushes <i>"why not X?"</i> — acknowledge the trade-off, give the upgrade path, don't apologise.
+  </p>
+  <div class="footer"><span>CryptoAI · CoinDCX Deck</span><span>9 / 14</span></div>
+</section>
+
+<!-- ============ 10. STAR STORY A ============ -->
+<section class="slide">
+  <div class="eyebrow">09 · STAR · A</div>
+  <h1>Debugging the 502 storm</h1>
+  <div class="grid2" style="margin-top: 4mm;">
+    <div class="card">
+      <h3>Situation</h3>
+      <p>Under load, <span class="mono">/api/market/coins</span> was returning 502s from CoinGecko's free tier.</p>
+      <h3>Task</h3>
+      <p>Keep p95 latency &lt; 500 ms without paying for a Pro plan.</p>
+    </div>
+    <div class="card">
+      <h3>Action</h3>
+      <ul>
+        <li>Added an in-process TTL cache keyed on <span class="mono">(path, params)</span></li>
+        <li>Tuned TTL per endpoint: 30 s for live price, 120 s for OHLC</li>
+        <li>Graceful fallback — return stale cache with <span class="mono">{stale: true}</span> when upstream fails</li>
+      </ul>
+      <h3>Result</h3>
+      <p><b>Upstream calls ↓ ~90 %</b>. Zero 502s under the same load.
+      User-visible latency dropped from ~900 ms p95 to <b>~80 ms p95</b>.</p>
+    </div>
+  </div>
+  <div class="footer"><span>CryptoAI · CoinDCX Deck</span><span>10 / 14</span></div>
+</section>
+
+<!-- ============ 11. STAR STORY B ============ -->
+<section class="slide">
+  <div class="eyebrow">09 · STAR · B</div>
+  <h1>Making the signal explainable</h1>
+  <div class="grid2" style="margin-top: 4mm;">
+    <div class="card">
+      <h3>Situation</h3>
+      <p>V1 showed "BUY — score 2". Users didn't trust it and bounced.</p>
+      <h3>Task</h3>
+      <p>Make the signal <b>accountable</b> without inventing numbers.</p>
+    </div>
+    <div class="card">
+      <h3>Action</h3>
+      <ul>
+        <li>Added a <span class="mono">reasons[]</span> list inside <span class="mono">compute_signal</span> — e.g. <i>"RSI 28 → oversold"</i></li>
+        <li>Fed reasons + raw numbers to Gemini with a tight prompt:<br>
+        <span class="mono" style="color:var(--accent)">"Summarise for a retail trader in ≤ 3 sentences. Do not invent prices."</span></li>
+      </ul>
+      <h3>Result</h3>
+      <p>Explanation became the most-clicked element on the dashboard. <b>Hallucination risk is bounded</b>
+      because the LLM never receives raw prices — a property I can defend in a compliance review.</p>
+    </div>
+  </div>
+  <div class="footer"><span>CryptoAI · CoinDCX Deck</span><span>11 / 14</span></div>
+</section>
+
+<!-- ============ 12. STAR STORY C ============ -->
+<section class="slide">
+  <div class="eyebrow">09 · STAR · C</div>
+  <h1>First-trade fear</h1>
+  <div class="grid2" style="margin-top: 4mm;">
+    <div class="card">
+      <h3>Situation</h3>
+      <p>Beginners hesitated to register at all — "what if I lose money the first day?"</p>
+      <h3>Task</h3>
+      <p>Give new users a <b>zero-risk first interaction</b> that still teaches the product.</p>
+    </div>
+    <div class="card">
+      <h3>Action</h3>
+      <ul>
+        <li>Seeded every new user with a <b>$10,000 virtual wallet</b> at registration</li>
+        <li>Paper trades share the same signal + risk surface as real trades but store in a separate collection</li>
+      </ul>
+      <h3>Result</h3>
+      <p>Activation → first interaction dropped from minutes to seconds. The same UX path doubles as an
+      <b>education feature</b> — exactly the kind of onboarding CoinDCX uses to convert new Indian retail users.</p>
+    </div>
+  </div>
+  <div class="footer"><span>CryptoAI · CoinDCX Deck</span><span>12 / 14</span></div>
+</section>
+
+<!-- ============ 13. RAPID-FIRE Q&A ============ -->
+<section class="slide">
+  <div class="eyebrow">10 · Rapid-fire Q&amp;A</div>
+  <h1>Prepared answers</h1>
+  <div class="two-col" style="margin-top: 4mm;">
+    <p><span class="q">Q · Why FastAPI over Django / Flask?</span><br>
+    <span class="a">Async I/O by default (CoinGecko + Gemini are I/O-bound), Pydantic contracts that double as OpenAPI docs, 2× less boilerplate.</span></p>
+
+    <p><span class="q">Q · Why MongoDB over Postgres?</span><br>
+    <span class="a">Schema evolves weekly at MVP stage. No joins in the read path. UUID ids. ETL nightly into Postgres when analytics matures.</span></p>
+
+    <p><span class="q">Q · How do you prevent ML over-fitting?</span><br>
+    <span class="a">max_depth = 4 · 100 trees · 90-bar window. Per-request retrain keeps the model honest. CV is the next step.</span></p>
+
+    <p><span class="q">Q · Switch to CoinDCX market data — how?</span><br>
+    <span class="a">Introduce a <span class="mono">MarketDataProvider</span> protocol with <span class="mono">get_coins / get_ohlc / get_price</span>. Ship CoinDCXProvider alongside CoinGeckoProvider. Zero change below the adapter — indicators only consume a <span class="mono">pandas.Series</span> of closes.</span></p>
+
+    <p><span class="q">Q · Handle LLM cost + latency?</span><br>
+    <span class="a">Gemini is called only on explicit user intent (Explain button). Cache explanation by <span class="mono">(coin, signal_bucket, day)</span> → repeat users in the session get it free.</span></p>
+
+    <p><span class="q">Q · Biggest weakness today?</span><br>
+    <span class="a">Single-instance in-memory cache — breaks on horizontal scale. Fix: Redis + per-coin invalidation pub-sub. ~1 day of work.</span></p>
+
+    <p><span class="q">Q · First sprint at CoinDCX — what ships?</span><br>
+    <span class="a">(1) Exchange-native WebSocket feed + Redis fan-out. (2) Pickled ML models + nightly retrain. (3) Email/Telegram alert delivery — the feature that makes the app survive being closed in a tab.</span></p>
+
+    <p><span class="q">Q · Regulatory overlay (SEBI / FIU-IND)?</span><br>
+    <span class="a">KYC before paper→real · append-only trade log with hash chain · data residency in India. All infra-layer, no change to the signal engine.</span></p>
+  </div>
+  <div class="footer"><span>CryptoAI · CoinDCX Deck</span><span>13 / 14</span></div>
+</section>
+
+<!-- ============ 14. CLOSE ============ -->
+<section class="slide cover">
+  <div class="brand">Closing · Three things to leave them with</div>
+  <h1 style="font-size: 34pt;">Opinionated.<br>Named upgrade paths.<br>Swap-one-adapter to CoinDCX.</h1>
+  <div class="grid3" style="margin-top: 10mm;">
+    <div class="card">
+      <h3>1 · Opinionated</h3>
+      <p>It has a view about what retail traders need, and the architecture reflects that view.</p>
+    </div>
+    <div class="card">
+      <h3>2 · Nothing accidental</h3>
+      <p>Every trade-off has a named upgrade path. Nothing is a dead end.</p>
+    </div>
+    <div class="card">
+      <h3>3 · Ready for CoinDCX</h3>
+      <p>Adapting to the CoinDCX stack is swap-one-adapter work, not a rewrite. That's by design.</p>
+    </div>
+  </div>
+  <p style="margin-top: 14mm; font-size: 14pt; color: var(--accent);">Thank you.  Questions?</p>
+  <div class="meta">CryptoAI Trading Assistant · CoinDCX Evaluation · July 2025 · 14 / 14</div>
+</section>
+
+</body>
+</html>

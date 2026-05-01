@@ -43,12 +43,23 @@ log "Detected mode: ${GRN}$MODE${NC}"
 # =============================================================
 # 2. Install backend deps (idempotent)
 # =============================================================
+# emergentintegrations lives on a private index, so pass --extra-index-url
+# on the MAIN install too; otherwise pip aborts the whole resolution and
+# nothing (fastapi, motor, pandas...) gets installed.
+EMERGENT_INDEX="https://d33sy5i8bnduwe.cloudfront.net/simple/"
+
 log "Installing backend Python deps (this is a no-op if already installed)..."
-python3 -m pip install -q --disable-pip-version-check -r "$BACKEND_DIR/requirements.txt" \
-  || warn "pip install had warnings - continuing"
-# emergentintegrations lives on a private index
-python3 -m pip install -q emergentintegrations --extra-index-url https://d33sy5i8bnduwe.cloudfront.net/simple/ \
-  || warn "emergentintegrations install skipped (offline?)"
+if ! python3 -m pip install --disable-pip-version-check \
+      --extra-index-url "$EMERGENT_INDEX" \
+      -r "$BACKEND_DIR/requirements.txt"; then
+  warn "Full install failed. Retrying WITHOUT emergentintegrations (AI Explain will be disabled)."
+  # Build a filtered requirements file on the fly
+  TMP_REQ=$(mktemp)
+  grep -viE '^emergentintegrations' "$BACKEND_DIR/requirements.txt" > "$TMP_REQ"
+  python3 -m pip install --disable-pip-version-check -r "$TMP_REQ" \
+    || { err "pip install failed. See output above."; exit 1; }
+  rm -f "$TMP_REQ"
+fi
 ok "backend deps ready"
 
 # =============================================================
@@ -119,8 +130,22 @@ for i in {1..30}; do
     ok "backend is responding on /api/"
     break
   fi
+  # if the process died, show the log and bail immediately
+  if ! kill -0 "$BACKEND_PID" 2>/dev/null; then
+    err "backend process died before responding. Last 40 lines of log:"
+    echo "----------------------------------------------------------------"
+    tail -n 40 "$LOG_DIR/backend.log" || true
+    echo "----------------------------------------------------------------"
+    exit 1
+  fi
   sleep 1
-  [[ $i -eq 30 ]] && { err "backend failed to start - see $LOG_DIR/backend.log"; exit 1; }
+  if [[ $i -eq 30 ]]; then
+    err "backend did not respond in 30s. Last 40 lines of log:"
+    echo "----------------------------------------------------------------"
+    tail -n 40 "$LOG_DIR/backend.log" || true
+    echo "----------------------------------------------------------------"
+    exit 1
+  fi
 done
 
 # --- Frontend (CRA via craco) ---
